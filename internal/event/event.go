@@ -1,6 +1,8 @@
 // Package event 提供离散事件仿真所需的事件类型与未来事件表（FEL）。
 package event
 
+import "container/heap"
+
 // 事件种类。
 const (
 	Arrival = iota
@@ -48,7 +50,7 @@ type Queue struct {
 
 // Push 将事件加入 FEL。
 func (q *Queue) Push(e Event) {
-	q.h = append(q.h, e)
+	heap.Push(&q.h, e)
 }
 
 // Pop 取出并返回时间最早的事件；空表返回 (零值, false)，不 panic。
@@ -56,10 +58,7 @@ func (q *Queue) Pop() (Event, bool) {
 	if q.h.Len() == 0 {
 		return Event{}, false
 	}
-	n := len(q.h)
-	e := q.h[n-1]
-	q.h = q.h[:n-1]
-	return e, true
+	return heap.Pop(&q.h).(Event), true
 }
 
 // Len 返回 FEL 中事件数量。
